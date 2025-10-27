@@ -1,0 +1,304 @@
+<UserControl x:Class="GoodManagement.Views.InventoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="Transparent">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Card -->
+        <materialDesign:Card Grid.Row="0" Margin="0,0,0,20" 
+                            materialDesign:ElevationAssist.Elevation="Dp2">
+            <Grid Margin="25,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <materialDesign:PackIcon Kind="Warehouse" 
+                                        Width="40" Height="40"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                    <TextBlock Text="QUẢN LÝ TỒN KHO" 
+                              FontSize="24" 
+                              FontWeight="Bold"/>
+                    <TextBlock Text="Theo dõi số lượng tồn kho và cảnh báo hàng sắp hết" 
+                              FontSize="14" 
+                              Opacity="0.7" 
+                              Margin="0,5,0,0"/>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Action Bar with Stats -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Total Items -->
+            <materialDesign:Card Grid.Column="0" 
+                                Margin="0,0,10,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2">
+                <Grid Margin="20,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <materialDesign:PackIcon Kind="PackageVariant" 
+                                            Width="30" Height="30"
+                                            VerticalAlignment="Center"
+                                            Foreground="#1976D2"/>
+                    <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                        <TextBlock Text="Tổng mặt hàng" 
+                                  FontSize="12" 
+                                  Opacity="0.7"/>
+                        <TextBlock Text="{Binding Inventories.Count}" 
+                                  FontSize="22" 
+                                  FontWeight="Bold"
+                                  Foreground="#1976D2"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- Low Stock -->
+            <materialDesign:Card Grid.Column="1" 
+                                Margin="0,0,10,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2">
+                <Grid Margin="20,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <materialDesign:PackIcon Kind="AlertCircle" 
+                                            Width="30" Height="30"
+                                            VerticalAlignment="Center"
+                                            Foreground="#F57C00"/>
+                    <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                        <TextBlock Text="Cảnh báo tồn thấp" 
+                                  FontSize="12" 
+                                  Opacity="0.7"/>
+                        <TextBlock Text="{Binding LowStockCount}" 
+                                  FontSize="22" 
+                                  FontWeight="Bold"
+                                  Foreground="#F57C00"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- Total Value (example) -->
+            <materialDesign:Card Grid.Column="2" 
+                                Margin="0,0,10,0"
+                                materialDesign:ElevationAssist.Elevation="Dp2">
+                <Grid Margin="20,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <materialDesign:PackIcon Kind="CurrencyUsd" 
+                                            Width="30" Height="30"
+                                            VerticalAlignment="Center"
+                                            Foreground="#2E7D32"/>
+                    <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                        <TextBlock Text="Giá trị tồn kho" 
+                                  FontSize="12" 
+                                  Opacity="0.7"/>
+                        <TextBlock Text="{Binding TotalInventoryValue, StringFormat={}{0:N0} ₫}" 
+                                  FontSize="22" 
+                                  FontWeight="Bold"
+                                  Foreground="#2E7D32"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- Refresh Button -->
+            <Button Grid.Column="3" 
+                   Command="{Binding LoadInventoriesCommand}"
+                   Style="{StaticResource MaterialDesignOutlinedButton}"
+                   ToolTip="Làm mới dữ liệu"
+                   Height="55" Width="55"
+                   Padding="0">
+                <materialDesign:PackIcon Kind="Refresh" Width="28" Height="28"/>
+            </Button>
+        </Grid>
+
+        <!-- Inventory DataGrid -->
+        <materialDesign:Card Grid.Row="2" materialDesign:ElevationAssist.Elevation="Dp2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <DataGrid Grid.Row="0"
+                         ItemsSource="{Binding Inventories}"
+                         SelectedItem="{Binding SelectedInventory}"
+                         AutoGenerateColumns="False"
+                         CanUserAddRows="False"
+                         IsReadOnly="True"
+                         SelectionMode="Single"
+                         HeadersVisibility="All"
+                         GridLinesVisibility="Horizontal"
+                         BorderThickness="0">
+                    
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                            <Setter Property="Height" Value="55"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLowStock}" Value="True">
+                                    <Setter Property="Background" Value="#FFF3E0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <!-- Status Icon -->
+                        <DataGridTemplateColumn Header="" Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <materialDesign:PackIcon Width="24" Height="24" 
+                                                            VerticalAlignment="Center"
+                                                            HorizontalAlignment="Center">
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="materialDesign:PackIcon">
+                                                <Setter Property="Kind" Value="CheckCircle"/>
+                                                <Setter Property="Foreground" Value="#2E7D32"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsLowStock}" Value="True">
+                                                        <Setter Property="Kind" Value="AlertCircle"/>
+                                                        <Setter Property="Foreground" Value="#F57C00"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Product ID -->
+                        <DataGridTextColumn Header="MÃ SP" 
+                                           Binding="{Binding ProductId}" 
+                                           Width="80">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Product Name -->
+                        <DataGridTextColumn Header="TÊN SẢN PHẨM" 
+                                           Binding="{Binding Product.ProductName}" 
+                                           Width="*">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Current Quantity -->
+                        <DataGridTextColumn Header="SỐ LƯỢNG TỒN" 
+                                           Binding="{Binding StockQuantity}" 
+                                           Width="150">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="16"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Foreground" Value="#2E7D32"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLowStock}" Value="True">
+                                            <Setter Property="Foreground" Value="#F57C00"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Last Updated -->
+                        <DataGridTextColumn Header="CẬP NHẬT CUỐI" 
+                                           Binding="{Binding LastUpdated, StringFormat=dd/MM/yyyy HH:mm}" 
+                                           Width="150">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Opacity" Value="0.7"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Last Updated -->
+                        <DataGridTextColumn Header="CẬP NHẬT CUỐI" 
+                                           Binding="{Binding LastUpdated, StringFormat=dd/MM/yyyy HH:mm}" 
+                                           Width="160">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Opacity" Value="0.7"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Actions -->
+                        <DataGridTemplateColumn Header="THAO TÁC" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding DataContext.UpdateQuantityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           CommandParameter="{Binding}"
+                                           Style="{StaticResource MaterialDesignFlatButton}"
+                                           ToolTip="Cập nhật số lượng"
+                                           Height="35">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Pencil" 
+                                                                    Width="18" Height="18"
+                                                                    VerticalAlignment="Center"
+                                                                    Margin="0,0,5,0"/>
+                                            <TextBlock Text="Cập nhật" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Footer -->
+                <Border Grid.Row="1" 
+                       Background="{DynamicResource MaterialDesignPaper}"
+                       BorderBrush="{DynamicResource MaterialDesignDivider}"
+                       BorderThickness="0,1,0,0"
+                       Padding="20,10">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Information" 
+                                                Width="16" Height="16"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,8,0"
+                                                Opacity="0.7"/>
+                        <TextBlock FontSize="13" Opacity="0.7" VerticalAlignment="Center">
+                            <Run Text="Sản phẩm được đánh dấu màu cam khi tồn kho ≤ ngưỡng cảnh báo"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </materialDesign:Card>
+    </Grid>
+</UserControl>

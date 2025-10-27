@@ -24,6 +24,8 @@ namespace GoodManagement.ViewModels
         private InventoryViewModel? _inventoryViewModel;
         private InboundViewModel? _inboundViewModel;
         private OutboundViewModel? _outboundViewModel;
+        private DashboardViewModel? _dashboardViewModel;
+        private ReportsViewModel? _reportsViewModel;
 
         public string CurrentView
         {
@@ -88,6 +90,35 @@ namespace GoodManagement.ViewModels
             }
         }
 
+        public DashboardViewModel DashboardViewModel
+        {
+            get
+            {
+                if (_dashboardViewModel == null)
+                {
+                    _dashboardViewModel = new DashboardViewModel(
+                        _currentUser,
+                        () => CurrentView = "Products",
+                        () => CurrentView = "Inbound",
+                        () => CurrentView = "Outbound",
+                        () => CurrentView = "Inventory",
+                        () => CurrentView = "Reports"
+                    );
+                }
+                return _dashboardViewModel;
+            }
+        }
+
+        public ReportsViewModel ReportsViewModel
+        {
+            get
+            {
+                if (_reportsViewModel == null)
+                    _reportsViewModel = new ReportsViewModel();
+                return _reportsViewModel;
+            }
+        }
+
         public ICommand NavigateToProductsCommand { get; }
         public ICommand NavigateToDashboardCommand { get; }
         public ICommand NavigateToInventoryCommand { get; }
@@ -120,7 +151,8 @@ namespace GoodManagement.ViewModels
         private void NavigateToDashboard()
         {
             CurrentView = "Dashboard";
-            LoadData(); // Refresh dashboard data
+            DashboardViewModel.LoadDashboardData(); // Refresh dashboard data
+            LoadData(); // Refresh main data
         }
 
         private void LoadData()

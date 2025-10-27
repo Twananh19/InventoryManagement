@@ -1,17 +1,18 @@
-﻿using System.Windows;
+using System.Windows;
 using GoodManagement.Models;
 using GoodManagement.ViewModels;
 
-namespace GoodManagement;
-
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class MainWindow : Window
+namespace GoodManagement
 {
-    public MainWindow(User user)
+    /// <summary>
+    /// MainWindow với UI cải tiến - Material Design
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
-        DataContext = new MainViewModel(user);
+        public MainWindow(User user)
+        {
+            InitializeComponent();
+            DataContext = new MainViewModel(user);
+        }
     }
 }
